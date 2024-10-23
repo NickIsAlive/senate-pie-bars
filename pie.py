@@ -37,6 +37,9 @@ st.title('Who will get pied?!')
 # Create a placeholder for the chart
 chart_placeholder = st.empty()
 
+# Initialize a counter for unique keys
+chart_key = 0
+
 while True:
     df = load_data()
 
@@ -75,8 +78,9 @@ while True:
             bargap=0.3  # Increase the gap between bars
         )
 
-        # Update the chart in the placeholder
-        chart_placeholder.plotly_chart(fig, config={'displayModeBar': False})  # Disable the mode bar which includes zoom/pan controls
+        # Update the chart in the placeholder with a unique key
+        chart_placeholder.plotly_chart(fig, config={'displayModeBar': False}, key=f"chart_{chart_key}")
+        chart_key += 1  # Increment the key for the next iteration
 
     # Wait for 60 seconds before refreshing
     time.sleep(60)
