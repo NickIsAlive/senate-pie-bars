@@ -52,13 +52,16 @@ while True:
         max_tickets = df['Tickets Sold'].max()
         color_intensities = (df['Tickets Sold'] - min_tickets) / (max_tickets - min_tickets)
 
-        # Add bars with color intensity (white to red)
+        # Add bars with color intensity (white to red) and no borders
         fig.add_trace(go.Bar(
             x=df['Teacher'],
             y=df['Tickets Sold'],
             text=df['Tickets Sold'],
             textposition='outside',
-            marker_color=[f'rgba(255, {int(255 * (1 - intensity))}, {int(255 * (1 - intensity))}, 1)' for intensity in color_intensities],
+            marker=dict(
+                color=[f'rgba(255, {int(255 * (1 - intensity))}, {int(255 * (1 - intensity))}, 1)' for intensity in color_intensities],
+                line=dict(width=0)  # Remove borders by setting line width to 0
+            ),
             hoverinfo='none',
         ))
 
