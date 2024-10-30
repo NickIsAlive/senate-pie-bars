@@ -115,21 +115,20 @@ while True:
             dragmode=False,
             xaxis=dict(fixedrange=True),
             bargap=0.3,
-            updatemenus=[dict(
-                type='buttons',
-                showactive=False,
-                buttons=[dict(
-                    label='Play',
-                    method='animate',
-                    args=[None, dict(
-                        frame=dict(duration=20, redraw=True),
-                        fromcurrent=True,
-                        mode='immediate'
-                    )]
-                )]
-            )],
-            # Hide the animation control button
-            updatemenus_visible=False
+            updatemenus=[{
+                'type': 'buttons',
+                'showactive': False,
+                'buttons': [{
+                    'label': 'Play',
+                    'method': 'animate',
+                    'args': [None, {
+                        'frame': {'duration': 20, 'redraw': True},
+                        'fromcurrent': True,
+                        'mode': 'immediate'
+                    }]
+                }],
+                'visible': False
+            }]
         )
 
         # Update the chart and store current data as previous
