@@ -37,8 +37,8 @@ st.title('Who will get pied?!')
 # Create a placeholder for the chart
 chart_placeholder = st.empty()
 
-# Initialize a counter for unique keys
-chart_key = 0
+# Initialize previous data as None
+prev_df = None
 
 while True:
     df = load_data()
@@ -52,18 +52,54 @@ while True:
         max_tickets = df['Tickets Sold'].max()
         color_intensities = (df['Tickets Sold'] - min_tickets) / (max_tickets - min_tickets)
 
-        # Add bars with color intensity (white to red) and no borders
+        # If we have previous data, create frames for animation
+        frames = []
+        if prev_df is not None:
+            # Create 30 intermediate frames for smooth animation
+            for i in range(30):
+                frame_df = pd.DataFrame()
+                frame_df['Teacher'] = df['Teacher']
+                frame_df['Tickets Sold'] = prev_df['Tickets Sold'] + (df['Tickets Sold'] - prev_df['Tickets Sold']) * (i/29)
+                
+                # Sort the frame data to match current order
+                frame_df = frame_df.set_index('Teacher').reindex(df['Teacher']).reset_index()
+                
+                # Calculate color intensities for frame
+                frame_min = frame_df['Tickets Sold'].min()
+                frame_max = frame_df['Tickets Sold'].max()
+                frame_intensities = (frame_df['Tickets Sold'] - frame_min) / (frame_max - frame_min)
+                
+                frames.append(go.Frame(
+                    data=[go.Bar(
+                        x=frame_df['Teacher'],
+                        y=frame_df['Tickets Sold'],
+                        text=frame_df['Tickets Sold'].round().astype(int),
+                        textposition='outside',
+                        marker=dict(
+                            color=[f'rgba(255, {int(255 * (1 - intensity))}, {int(255 * (1 - intensity))}, 1)' 
+                                  for intensity in frame_intensities],
+                            line=dict(width=0)
+                        ),
+                        hoverinfo='none'
+                    )]
+                ))
+
+        # Add the main bar trace
         fig.add_trace(go.Bar(
             x=df['Teacher'],
             y=df['Tickets Sold'],
             text=df['Tickets Sold'],
             textposition='outside',
             marker=dict(
-                color=[f'rgba(255, {int(255 * (1 - intensity))}, {int(255 * (1 - intensity))}, 1)' for intensity in color_intensities],
-                line=dict(width=0)  # Remove borders by setting line width to 0
+                color=[f'rgba(255, {int(255 * (1 - intensity))}, {int(255 * (1 - intensity))}, 1)' 
+                      for intensity in color_intensities],
+                line=dict(width=0)
             ),
             hoverinfo='none',
         ))
+
+        # Add frames to the figure
+        fig.frames = frames
 
         # Customize the layout
         fig.update_layout(
@@ -74,16 +110,31 @@ while True:
             showlegend=False,
             height=600,
             width=800,
-            yaxis=dict(showticklabels=False, showgrid=False, fixedrange=True),  # Combined yaxis settings
+            yaxis=dict(showticklabels=False, showgrid=False, fixedrange=True),
             plot_bgcolor='rgba(0,0,255,0)',
-            dragmode=False,  # Disable drag mode
-            xaxis=dict(fixedrange=True),  # Disable x-axis zoom
-            bargap=0.3  # Increase the gap between bars
+            dragmode=False,
+            xaxis=dict(fixedrange=True),
+            bargap=0.3,
+            updatemenus=[dict(
+                type='buttons',
+                showactive=False,
+                buttons=[dict(
+                    label='Play',
+                    method='animate',
+                    args=[None, dict(
+                        frame=dict(duration=20, redraw=True),
+                        fromcurrent=True,
+                        mode='immediate'
+                    )]
+                )]
+            )],
+            # Hide the animation control button
+            updatemenus_visible=False
         )
 
-        # Update the chart in the placeholder with a unique key
-        chart_placeholder.plotly_chart(fig, config={'displayModeBar': False}, key=f"chart_{chart_key}")
-        chart_key += 1  # Increment the key for the next iteration
+        # Update the chart and store current data as previous
+        chart_placeholder.plotly_chart(fig, config={'displayModeBar': False}, use_container_width=True)
+        prev_df = df.copy()
 
-    # Wait for 60 seconds before refreshing
-    time.sleep(60)
+    # Wait for 10 seconds before refreshing
+    time.sleep(10)
