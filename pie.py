@@ -35,6 +35,9 @@ def load_data():
 # Streamlit app
 st.title('Which teacher do you want to pie?!')
 
+# Add key explanation
+st.sidebar.write("🥧 Key: 10 tickets = 1 pie")
+
 # Create a placeholder for the chart
 chart_placeholder = st.empty()
 
