@@ -16,7 +16,7 @@ def load_data():
     
     if response.status_code == 200:
         # Convert to DataFrame
-        df = pd.read_csv(StringIO(response.text), header=None, names=['Teacher', 'Tickets Sold'])
+        df = pd.read_csv(StringIO(response.text), header=None, names=['Teacher', 'Tickets Sold (10 tickets = 1 pie)'])
 
         # Ensure 'Tickets Sold' column is numeric
         df['Tickets Sold'] = pd.to_numeric(df['Tickets Sold'], errors='coerce')
@@ -33,10 +33,7 @@ def load_data():
         return pd.DataFrame()
 
 # Streamlit app
-st.title('Which teacher do you want to pie?!')
-
-# Add key explanation
-st.sidebar.write("🥧 Key: 10 tickets = 1 pie")
+st.title('Which teacher does St. Cats want to pie?!')
 
 # Create a placeholder for the chart
 chart_placeholder = st.empty()
