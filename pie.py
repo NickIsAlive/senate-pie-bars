@@ -33,7 +33,7 @@ def load_data():
         return pd.DataFrame()
 
 # Streamlit app
-st.title('Which teacher does St. Cats want to pie?!')
+st.title('Which teacher gets the most pies?!')
 
 # Create a placeholder for the chart
 chart_placeholder = st.empty()
