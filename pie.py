@@ -9,23 +9,23 @@ import numpy as np
 def load_data():
     # URL of the Google Sheet (replace with your sheet ID)
     sheet_id = '1FnR8v9edEkiQwEcPEEGD92SKQqDHDPF6GHsl92lcirM'
-    url = f'https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv&range=A2:B12'
+    url = f'https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv&range=A2:D11'
 
     # Fetch data from the Google Sheet
     response = requests.get(url)
     
     if response.status_code == 200:
         # Convert to DataFrame
-        df = pd.read_csv(StringIO(response.text), header=None, names=['Teacher', 'Tickets Sold'])
+        df = pd.read_csv(StringIO(response.text), header=None, names=['Teacher', 'Tickets Sold', 'Other', 'Pies Sold'])
 
-        # Ensure 'Tickets Sold' column is numeric
-        df['Tickets Sold'] = pd.to_numeric(df['Tickets Sold'], errors='coerce')
+        # Ensure 'Pies Sold' column is numeric
+        df['Pies Sold'] = pd.to_numeric(df['Pies Sold'], errors='coerce')
 
         # Remove any rows with NaN values
         df = df.dropna()
 
-        # Sort the DataFrame by 'Tickets Sold' in descending order
-        df = df.sort_values('Tickets Sold', ascending=False)
+        # Sort the DataFrame by 'Pies Sold' in descending order
+        df = df.sort_values('Pies Sold', ascending=False)
         
         return df
     else:
@@ -71,14 +71,14 @@ while True:
                 # Calculate interpolated position
                 pos = current_idx + (target_idx - current_idx) * (i / num_steps)
                 
-                # Get interpolated ticket value
-                current_tickets = previous_df.loc[previous_df['Teacher'] == teacher, 'Tickets Sold'].iloc[0]
-                target_tickets = df.loc[df['Teacher'] == teacher, 'Tickets Sold'].iloc[0]
-                tickets = current_tickets + (target_tickets - current_tickets) * (i / num_steps)
+                # Get interpolated pie value
+                current_pies = previous_df.loc[previous_df['Teacher'] == teacher, 'Pies Sold'].iloc[0]
+                target_pies = df.loc[df['Teacher'] == teacher, 'Pies Sold'].iloc[0]
+                pies = current_pies + (target_pies - current_pies) * (i / num_steps)
                 
                 step_df = pd.concat([step_df, pd.DataFrame({
                     'Teacher': [teacher],
-                    'Tickets Sold': [tickets],
+                    'Pies Sold': [pies],
                     'Position': [pos]
                 })])
             
@@ -88,17 +88,17 @@ while True:
 
         # Update chart at each interpolation step for smooth animation
         for step_df in steps:
-            # Calculate color intensity based on Tickets Sold for the current step
-            min_tickets = step_df['Tickets Sold'].min()
-            max_tickets = step_df['Tickets Sold'].max()
-            color_intensities = (step_df['Tickets Sold'] - min_tickets) / (max_tickets - min_tickets)
+            # Calculate color intensity based on Pies Sold for the current step
+            min_pies = step_df['Pies Sold'].min()
+            max_pies = step_df['Pies Sold'].max()
+            color_intensities = (step_df['Pies Sold'] - min_pies) / (max_pies - min_pies)
 
             # Update the figure with current interpolated data
             fig = go.Figure()
             fig.add_trace(go.Bar(
                 x=step_df['Teacher'],
-                y=step_df['Tickets Sold'],
-                text=step_df['Tickets Sold'].astype(int),  # Ensure text displays as integers
+                y=step_df['Pies Sold'],
+                text=step_df['Pies Sold'].astype(int),  # Ensure text displays as integers
                 textposition='outside',
                 marker=dict(
                     color=[f'rgba(255, {int(255 * (1 - intensity))}, {int(255 * (1 - intensity))}, 1)' 
@@ -110,7 +110,7 @@ while True:
 
             # Update layout with smooth settings
             fig.update_layout(
-                title='Tickets Sold per Teacher',
+                title='Pies Sold per Teacher',
                 xaxis_title='',
                 yaxis_title='',
                 xaxis_tickangle=-45,
