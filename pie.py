@@ -16,16 +16,16 @@ def load_data():
     
     if response.status_code == 200:
         # Convert to DataFrame
-        df = pd.read_csv(StringIO(response.text), header=None, names=['Teacher', 'Tickets Sold (10 tickets = 1 pie) (10 tickets = 1 pie)'])
+        df = pd.read_csv(StringIO(response.text), header=None, names=['Teacher', 'Tickets Sold'])
 
-        # Ensure 'Tickets Sold (10 tickets = 1 pie)' column is numeric
-        df['Tickets Sold (10 tickets = 1 pie)'] = pd.to_numeric(df['Tickets Sold (10 tickets = 1 pie)'], errors='coerce')
+        # Ensure 'Tickets Sold' column is numeric
+        df['Tickets Sold'] = pd.to_numeric(df['Tickets Sold'], errors='coerce')
 
         # Remove any rows with NaN values
         df = df.dropna()
 
-        # Sort the DataFrame by 'Tickets Sold (10 tickets = 1 pie)' in descending order
-        df = df.sort_values('Tickets Sold (10 tickets = 1 pie)', ascending=False)
+        # Sort the DataFrame by 'Tickets Sold' in descending order
+        df = df.sort_values('Tickets Sold', ascending=False)
         
         return df
     else:
@@ -72,13 +72,13 @@ while True:
                 pos = current_idx + (target_idx - current_idx) * (i / num_steps)
                 
                 # Get interpolated ticket value
-                current_tickets = previous_df.loc[previous_df['Teacher'] == teacher, 'Tickets Sold (10 tickets = 1 pie)'].iloc[0]
-                target_tickets = df.loc[df['Teacher'] == teacher, 'Tickets Sold (10 tickets = 1 pie)'].iloc[0]
+                current_tickets = previous_df.loc[previous_df['Teacher'] == teacher, 'Tickets Sold'].iloc[0]
+                target_tickets = df.loc[df['Teacher'] == teacher, 'Tickets Sold'].iloc[0]
                 tickets = current_tickets + (target_tickets - current_tickets) * (i / num_steps)
                 
                 step_df = pd.concat([step_df, pd.DataFrame({
                     'Teacher': [teacher],
-                    'Tickets Sold (10 tickets = 1 pie)': [tickets],
+                    'Tickets Sold': [tickets],
                     'Position': [pos]
                 })])
             
@@ -88,17 +88,17 @@ while True:
 
         # Update chart at each interpolation step for smooth animation
         for step_df in steps:
-            # Calculate color intensity based on Tickets Sold (10 tickets = 1 pie) for the current step
-            min_tickets = step_df['Tickets Sold (10 tickets = 1 pie)'].min()
-            max_tickets = step_df['Tickets Sold (10 tickets = 1 pie)'].max()
-            color_intensities = (step_df['Tickets Sold (10 tickets = 1 pie)'] - min_tickets) / (max_tickets - min_tickets)
+            # Calculate color intensity based on Tickets Sold for the current step
+            min_tickets = step_df['Tickets Sold'].min()
+            max_tickets = step_df['Tickets Sold'].max()
+            color_intensities = (step_df['Tickets Sold'] - min_tickets) / (max_tickets - min_tickets)
 
             # Update the figure with current interpolated data
             fig = go.Figure()
             fig.add_trace(go.Bar(
                 x=step_df['Teacher'],
-                y=step_df['Tickets Sold (10 tickets = 1 pie)'],
-                text=step_df['Tickets Sold (10 tickets = 1 pie)'].astype(int),  # Ensure text displays as integers
+                y=step_df['Tickets Sold'],
+                text=step_df['Tickets Sold'].astype(int),  # Ensure text displays as integers
                 textposition='outside',
                 marker=dict(
                     color=[f'rgba(255, {int(255 * (1 - intensity))}, {int(255 * (1 - intensity))}, 1)' 
@@ -110,7 +110,7 @@ while True:
 
             # Update layout with smooth settings
             fig.update_layout(
-                title='Tickets Sold (10 tickets = 1 pie) per Teacher',
+                title='Tickets Sold per Teacher',
                 xaxis_title='',
                 yaxis_title='',
                 xaxis_tickangle=-45,
