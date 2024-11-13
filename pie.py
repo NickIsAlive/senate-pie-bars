@@ -110,7 +110,7 @@ while True:
 
             # Update layout with smooth settings
             fig.update_layout(
-                title='Pies Sold per Teacher',
+                title='Pies per Teacher',
                 xaxis_title='',
                 yaxis_title='',
                 xaxis_tickangle=-45,
