@@ -100,7 +100,7 @@ while True:
                 y=step_df['Pies Sold'],
                 text=step_df['Pies Sold'].astype(int),  # Ensure text displays as integers
                 textposition='outside',
-                textfont=dict(size=24),  # Increased font size for pie numbers
+                textfont=dict(size=20),  # Increased font size for pie numbers
                 marker=dict(
                     color=[f'rgba(255, {int(255 * (1 - intensity))}, {int(255 * (1 - intensity))}, 1)' 
                            for intensity in color_intensities],
@@ -123,7 +123,7 @@ while True:
                 dragmode=False,
                 xaxis=dict(
                     fixedrange=True,
-                    tickfont=dict(size=20)  # Increased font size for teacher names
+                    tickfont=dict(size=16)  # Increased font size for teacher names
                 ),
                 bargap=0.3
             )
