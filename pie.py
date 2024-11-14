@@ -116,7 +116,7 @@ while True:
                 yaxis_title='',
                 xaxis_tickangle=-45,
                 showlegend=False,
-                height=600,
+                height=800,
                 width=800,
                 yaxis=dict(showticklabels=False, showgrid=False, fixedrange=True),
                 plot_bgcolor='rgba(0,0,255,0)',
